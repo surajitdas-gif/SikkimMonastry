@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🛕 Monastery Explorer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+      header {
+        background: #8b0000;
+        color: white;
+        padding: 1rem;
+        text-align: center;
+        position: relative;
+      }
+      header h1 {
+        margin: 0;
+      }
+      header p {
+        margin: 5px 0 0;
+        font-size: 0.9rem;
+      }
+      #logoutBtn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 8px 16px;
+        background: #fff;
+        color: #8b0000;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      nav {
+        display: flex;
+        justify-content: center;
+        background: #b22222;
+        padding: 0.5rem 0;
+        gap: 20px;
+      }
+      nav a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 8px 16px;
+        border-radius: 8px;
+        transition: background 0.3s;
+      }
+      nav a:hover {
+        background: #8b0000;
+      }
+      #map {
+        width: 100%;
+        height: 500px;
+        margin-top: 20px;
+      }
+      .search-box {
+        display: flex;
+        justify-content: center;
+        margin: 10px;
+      }
+      .search-box input {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px 0 0 8px;
+      }
+      .search-box button {
+        padding: 10px;
+        border: none;
+        background: #8b0000;
+        color: white;
+        border-radius: 0 8px 8px 0;
+        cursor: pointer;
+      }
+      .cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin: 15px;
+      }
+      .card {
+        border: 1px solid #ccc;
+        border-radius: 12px;
+        overflow: hidden;
+        width: 250px;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s;
+      }
+      .card:hover {
+        transform: scale(1.05);
+      }
+      .card img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+      }
+      .card-body {
+        padding: 10px;
+      }
+      .card-body h3 {
+        margin: 0 0 5px;
+        font-size: 1.1rem;
+      }
+      .card-body p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #555;
+      }
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal.active {
+        display: flex;
+      }
+      .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .modal-content h2 {
+        margin: 10px 0;
+      }
+      .modal-content img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        margin-bottom: 15px;
+        border-radius: 12px;
+      }
+      .close-btn,
+      .book-btn,
+      .feature-btn {
+        background: #8b0000;
+        color: white;
+        padding: 10px 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin: 5px 0;
+        width: 80%;
+        font-size: 1rem;
+      }
+      .feature-btn {
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🛕 Monastery Explorer</h1>
+      <p>Search monasteries, explore on map, and learn their history</p>
+      <button id="logoutBtn">Logout</button>
+    </header>
+
+    <nav>
+      <a href="agency-details.html">Book Your Tour</a>
+      <a href="calander.html">Cultural Board</a>
+      <a href="aisearch.html">AI Search</a>
+      <!-- 360° Virtual Tour link removed as 360 view is now per monastery -->
+      <a href="archive.html" id="">Archives</a>
+    </nav>
+
+    <div class="search-box">
+      <input type="text" id="mapSearch" placeholder="Enter monastery name..." />
+      <button id="searchBtn">Search</button>
+    </div>
+
+    <div class="cards-container" id="cardsContainer"></div>
+    <div id="map"></div>
+
+    <div id="monasteryModal" class="modal">
+      <div class="modal-content">
+        <img id="modalImage" src="" alt="Monastery Image" />
+        <div id="monasteryDetails"></div>
+        <button id="modalBook" class="book-btn">Book Now</button>
+        <button id="modal360" class="feature-btn">Virtual 360° View</button>
+        <button id="modalAudio" class="feature-btn">Audio Guide</button>
+        <button id="modalClose" class="close-btn">Close</button>
+      </div>
+    </div>
+
+    <!-- 360° Virtual Tour Modal -->
+    <div id="virtualTourModal" class="modal">
+      <div
+        class="modal-content"
+        style="max-width: 800px; width: 95%; height: 500px"
+      >
+        <h2 style="margin-bottom: 10px">360° Virtual Tour</h2>
+        <iframe
+          id="streetViewFrame"
+          width="100%"
+          height="400"
+          style="border: 0; border-radius: 12px"
+          allowfullscreen
+          loading="lazy"
+        ></iframe>
+        <button
+          id="closeVirtualTour"
+          class="close-btn"
+          style="width: 200px; margin-top: 10px"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      const monasteries = {
+        rumtek: {
+          name: "Rumtek Monastery",
+          lat: 27.3301,
+          lng: 88.5642,
+          description: "Largest monastery in Sikkim, near Gangtok.",
+          image: "rumtek.webp",
+        },
+        pemayangtse: {
+          name: "Pemayangtse Monastery",
+          lat: 27.3245,
+          lng: 88.3172,
+          description: "One of the oldest monasteries, near Pelling.",
+          image: "Pemayangtse Monastery.png",
+        },
+        tashiding: {
+          name: "Tashiding Monastery",
+          lat: 27.3561,
+          lng: 88.439,
+          description: "Important pilgrimage site with spiritual heritage.",
+          image: "Tashiding Monastery.jpg",
+        },
+        enchey: {
+          name: "Enchey Monastery",
+          lat: 27.3312,
+          lng: 88.6132,
+          description: "Peaceful monastery in Gangtok with scenic views.",
+          image: "Enchey Monastery.jpg",
+        },
+        dubdi: {
+          name: "Dubdi Monastery",
+          lat: 27.338,
+          lng: 88.3005,
+          description: "Oldest monastery, near Yuksom with scenic views.",
+          image: "Dubdi Monaster.jpg",
+        },
+      };
+
+      const map = L.map("map").setView([27.3389, 88.6065], 10);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
+
+      let userMarker;
+      let routeLayer;
+
+      // Distance calculation
+      function getDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = ((lat2 - lat1) * Math.PI) / 180;
+        const dLon = ((lon2 - lon1) * Math.PI) / 180;
+        const a =
+          Math.sin(dLat / 2) ** 2 +
+          Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) ** 2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+      }
+
+      // Show modal
+      function showMonasteryModal(monastery) {
+        document.getElementById("modalImage").src = monastery.image;
+        document.getElementById(
+          "monasteryDetails"
+        ).innerHTML = `<h2>${monastery.name}</h2><p>${monastery.description}</p>`;
+        document.getElementById("monasteryModal").classList.add("active");
+      }
+
+      document.getElementById("modalClose").addEventListener("click", () => {
+        document.getElementById("monasteryModal").classList.remove("active");
+      });
+
+      // Book function
+      function bookMonastery(name) {
+        window.location.href = `booking.html?monastery=${encodeURIComponent(
+          name
+        )}`;
+      }
+
+      // Add markers
+      Object.values(monasteries).forEach((m) => {
+        const marker = L.marker([m.lat, m.lng])
+          .addTo(map)
+          .bindPopup(`<b>${m.name}</b><br>${m.description}`);
+        marker.on("click", () => showMonasteryModal(m));
+      });
+
+      // Add cards
+      const cardsContainer = document.getElementById("cardsContainer");
+      Object.values(monasteries).forEach((
+      m) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+    <img src="${m.image}" alt="${m.name}">
+    <div class="card-body">
+      <h3>${m.name}</h3>
+      <p>${m.description.substring(0, 60)}...</p>
+      <button class="book-btn" data-name="${m.name}">Book Now</button>
+    </div>
+  `;
+        card.addEventListener("click", () => {
+          map.setView([m.lat, m.lng], 12);
+          showMonasteryModal(m);
+        });
+        cardsContainer.appendChild(card);
+      });
+
+      // Event delegation
+      document.addEventListener("click", (e) => {
+        if (
+          e.target.classList.contains("book-btn") ||
+          e.target.id === "modalBook"
+        ) {
+          let name =
+            e.target.dataset.name ||
+            document.getElementById("monasteryDetails").querySelector("h2")
+              .innerText;
+          bookMonastery(name);
+        }
+        if (e.target.id === "modal360") {
+          // Get current monastery name from modal
+          const monasteryName = document
+            .getElementById("monasteryDetails")
+            .querySelector("h2").innerText;
+          // Use specific embed for Rumtek Monastery
+          let streetViewUrl = "";
+          if (monasteryName === "Rumtek Monastery") {
+            streetViewUrl =
+              "https://www.google.com/maps/embed?pb=!4v1757862563444!6m8!1m7!1sCAoSF0NJSE0wb2dLRUlDQWdJRDJnWVdjb2dF!2m2!1d27.2885258949387!2d88.56180959787903!3f37.69231725504985!4f0.003832661155328765!5f0.7820865974627469";
+          } else if (monasteryName === "Pemayangtse Monastery") {
+            streetViewUrl =
+              "https://www.google.com/maps/embed?pb=!4v1757862927211!6m8!1m7!1sCAoSF0NJSE0wb2dLRUlDQWdJQ0U3SXFEeFFF!2m2!1d27.30426034149243!2d88.30153660084635!3f307.6152239993516!4f21.481097185825817!5f0.7820865974627469";
+          } else if (monasteryName === "Tashiding Monastery") {
+            streetViewUrl =
+              "https://www.google.com/maps/embed?pb=!4v1757863154912!6m8!1m7!1sCAoSFkNJSE0wb2dLRUlDQWdJQ0V6c08zSWc.!2m2!1d27.30891943909927!2d88.29787983128344!3f280!4f10!5f0.7820865974627469";
+          } else if (monasteryName === "Enchey Monastery") {
+            streetViewUrl =
+              "https://www.google.com/maps/embed?pb=!4v1757863526697!6m8!1m7!1sCAoSHENJQUJJaEFHYnlmUVF3WEFFMmVudUt3QUNhTTA.!2m2!1d27.33593677395685!2d88.61916587167339!3f336.24452112834024!4f4.772964613964433!5f0.7820865974627469";
+          } else if (monasteryName === "Dubdi Monastery") {
+            streetViewUrl =
+              "https://www.google.com/maps/embed?pb=!4v1757863656336!6m8!1m7!1sCAoSFkNJSE0wb2dLRUlDQWdJQ0VfNWJDZlE.!2m2!1d27.36641022759916!2d88.22990891649984!3f40!4f10!5f0.7820865974627469";
+          } else {
+            // fallback: show message or blank
+            streetViewUrl = "";
+          }
+          if (streetViewUrl) {
+            document.getElementById("streetViewFrame").src = streetViewUrl;
+            document.getElementById("virtualTourModal").classList.add("active");
+          } else {
+            document.getElementById("streetViewFrame").src = "";
+            document.getElementById("virtualTourModal").classList.add("active");
+            document.getElementById("streetViewFrame").outerHTML =
+              '<div id="streetViewFrame" style="width:100%;height:400px;display:flex;align-items:center;justify-content:center;color:#8b0000;font-weight:bold;font-size:1.2rem;border-radius:12px;background:#f8f8f8;">360° view not available for this monastery.</div>';
+            setTimeout(() => {
+              // Restore iframe for next use
+              document.getElementById("streetViewFrame").outerHTML =
+                '<iframe id="streetViewFrame" width="100%" height="400" style="border:0; border-radius: 12px;" allowfullscreen loading="lazy"></iframe>';
+            }, 2000);
+          }
+        }
+        if (e.target.id === "closeVirtualTour") {
+          document
+            .getElementById("virtualTourModal")
+            .classList.remove("active");
+          document.getElementById("streetViewFrame").src = "";
+        }
+        if (e.target.id === "modalAudio") alert("Audio Guide coming soon!");
+      });
+
+      // Search & Route
+      document.getElementById("searchBtn").addEventListener("click", () => {
+        const query = document
+          .getElementById("mapSearch")
+          .value.toLowerCase()
+          .trim();
+        const m = Object.values(monasteries).find(
+          (mon) => mon.name.toLowerCase() === query
+        );
+        if (!m) return alert("Monastery not found!");
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (pos) => {
+              const userCoords = [pos.coords.latitude, pos.coords.longitude];
+
+              // Remove old marker & route
+              if (userMarker) map.removeLayer(userMarker);
+              if (routeLayer) map.removeLayer(routeLayer);
+
+              // Add user marker
+              userMarker = L.marker(userCoords, {
+                icon: L.icon({
+                  iconUrl:
+                    "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+                  iconSize: [32, 32],
+                }),
+              })
+                .addTo(map)
+                .bindPopup("You are here")
+                .openPopup();
+
+              // Show monastery modal
+              map.setView([m.lat, m.lng], 12);
+              showMonasteryModal(m);
+
+              // Draw route using OpenRouteService or polyline (simple)
+              fetch(
+                `https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${m.lng},${m.lat}?overview=full&geometries=geojson`
+              )
+                .then((res) => res.json())
+                .then((data) => {
+                  const route = data.routes[0].geometry;
+                  routeLayer = L.geoJSON(route, {
+                    color: "blue",
+                    weight: 5,
+                  }).addTo(map);
+                });
+
+              // Distance & approx duration
+              const distance = getDistance(
+                userCoords[0],
+                userCoords[1],
+                m.lat,
+                m.lng
+              );
+              const approxDuration = Math.round((distance / 50) * 60);
+              document.getElementById(
+                "monasteryDetails"
+              ).innerHTML += `<p><b>Distance:</b> ${distance.toFixed(
+                2
+              )} km<br><b>Approx Duration:</b> ${approxDuration} mins</p>`;
+            },
+            () => alert("Geolocation not allowed. Cannot calculate distance.")
+          );
+        } else alert("Geolocation not supported by your browser.");
+      });
+
+      // Logout
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+        localStorage.removeItem("user");
+        alert("You have been logged out successfully!");
+        window.location.href = "login.html";
+      });
+    </script>
+  </body>
+</html>

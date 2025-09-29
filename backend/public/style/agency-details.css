@@ -1,0 +1,262 @@
+/* --- Basic & Reused Styles --- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #faf8f5;
+    color: #3c2c23;
+}
+
+header {
+    background-color: #8c181e;
+    color: #fff;
+    padding: 0.5em 0;
+    box-shadow: 0 2px 6px rgba(60,44,35,0.08);
+}
+
+.navbar {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the title */
+    text-align: center;
+}
+
+.hero {
+    text-align: center;
+    margin: 2em 0;
+}
+
+.hero h2 {
+    font-size: 2.2em;
+    margin-bottom: 0.3em;
+}
+
+/* --- Styles for Details Page --- */
+.agency-details-container {
+    width: 85%;
+    margin: 2em auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5em;
+}
+
+.agency-card-detailed {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.09);
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.agency-img-container {
+    flex: 0 0 300px;
+}
+
+.agency-img-detailed {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.agency-content-detailed {
+    padding: 1.5em 2em;
+    flex: 1;
+}
+
+.agency-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.8em;
+    margin-bottom: 1em;
+}
+
+/* Container for title and specialization */
+.agency-header-title {
+    flex: 1; /* Allows this container to grow */
+}
+
+.agency-title-detailed {
+    font-size: 1.8em;
+    font-weight: 600;
+    color: #8c181e;
+    margin: 0;
+}
+
+.agency-rating {
+    flex-shrink: 0; /* Prevents rating from shrinking */
+    margin-left: 1em; /* Adds space between title and rating */
+}
+
+.agency-rating .fa-star, .agency-rating .fa-star-half-alt {
+    color: #f39c12;
+}
+
+.agency-rating .fa-star-o {
+    color: #ccc;
+}
+
+.agency-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5em;
+    margin-bottom: 1.5em;
+}
+
+.info-block h4 {
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 0.5em;
+}
+
+.info-block p, .info-block ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: #4e3d2a;
+}
+
+.info-block ul li {
+    margin-bottom: 0.4em;
+}
+
+.info-block i {
+    margin-right: 8px;
+    color: #8c181e;
+    width: 16px;
+    text-align: center;
+}
+
+.agency-details-btn {
+    display: inline-block;
+    padding: 10px 22px;
+    color: #fff;
+    background: #8c181e;
+    border: none;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 1em;
+    transition: background 0.2s;
+    margin-top: 1em;
+}
+
+.agency-details-btn:hover {
+    background: #a91e29;
+}
+
+/* --- Back to Home Button Styles --- */
+.back-home-container {
+    text-align: center;
+    margin: 3em 0 4em;
+}
+
+.back-home-btn {
+    display: inline-block;
+    padding: 12px 28px;
+    color: #8c181e;
+    background: transparent;
+    border: 2px solid #8c181e;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.back-home-btn:hover {
+    background: #8c181e;
+    color: #fff;
+}
+
+/* --- Search Bar Styles --- */
+.search-container {
+    position: relative;
+    width: 60%;
+    margin: 1.5em auto 0;
+    max-width: 550px;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 12px 20px 12px 45px;
+    border: 2px solid #e0d9d4;
+    border-radius: 25px;
+    font-size: 1em;
+    color: #3c2c23;
+    background-color: #fff;
+    transition: border-color 0.3s;
+    box-sizing: border-box; /* Ensures padding doesn't affect final width */
+}
+
+#searchInput::placeholder {
+    color: #9a8c82;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: #8c181e;
+}
+
+.search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #b5a89f;
+}
+
+.no-results {
+    text-align: center;
+    font-size: 1.2em;
+    color: #4e3d2a;
+    padding: 2em;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.09);
+}
+
+/* --- Specialization Tag Style --- */
+.agency-specialization {
+    display: inline-block;
+    background-color: #fdf6f1;
+    color: #8c181e;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.85em;
+    font-weight: 500;
+    margin-top: 0.5em;
+    border: 1px solid #f2e9e4;
+}
+
+.agency-specialization i {
+    margin-right: 6px;
+    color: #8c181e;
+}
+
+
+/* --- Media Queries for Responsiveness --- */
+@media (max-width: 900px) {
+    .agency-card-detailed {
+        flex-direction: column;
+    }
+    .agency-img-container {
+        width: 100%;
+        height: 200px;
+        flex-basis: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-container {
+        width: 85%;
+    }
+}
+
+@media (max-width: 600px) {
+    .agency-header { flex-direction: column; gap: 0.8em; align-items: flex-start; }
+    .agency-content-detailed { padding: 1em 1.2em; }
+    .agency-rating { margin-left: 0; }
+}

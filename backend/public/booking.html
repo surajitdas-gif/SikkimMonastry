@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monastery Booking</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f9f9f9; }
+    h1 { color: #8B0000; margin-bottom: 20px; }
+    form { display: inline-block; text-align: left; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input { width: 100%; padding: 10px; margin-top: 5px; border-radius: 8px; border: 1px solid #ccc; }
+    button { padding: 10px 20px; background: #8B0000; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; width: 100%; font-size: 1rem; }
+    a.home-link { display: block; margin-top: 20px; color: #8B0000; text-decoration: none; font-weight: bold; }
+    a.home-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1>Monastery Booking</h1>
+  <form id="bookingForm">
+    <label>Monastery</label>
+    <input type="text" id="monasteryName" name="monastery" readonly />
+
+    <label>Booking Date</label>
+    <input type="date" id="bookingDate" name="date" required />
+
+    <label>Number of Members</label>
+    <input type="number" id="members" name="members" min="1" value="1" required />
+
+    <label>Email</label>
+    <input type="email" id="email" name="email" placeholder="Enter your email" required />
+
+    <label>Phone Number</label>
+    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required />
+
+    <button type="submit">Confirm Booking</button>
+  </form>
+
+  <a href="touristdash.html" class="home-link">← Back to Home</a>
+
+  <script>
+    // Get monastery name from URL
+    const params = new URLSearchParams(window.location.search);
+    const monastery = params.get('monastery') || 'Unknown Monastery';
+    document.getElementById('monasteryName').value = monastery;
+
+    // Handle form submission
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const monastery = document.getElementById('monasteryName').value;
+      const date = document.getElementById('bookingDate').value;
+      const members = document.getElementById('members').value;
+      const email = document.getElementById('email').value;
+      const phone = document.getElementById('phone').value;
+
+      if (!date) return alert("Please select a booking date.");
+      if (!email) return alert("Please enter your email.");
+      if (!phone) return alert("Please enter your phone number.");
+
+      try {
+          const response = await fetch('http://localhost:5000/api/bookings', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ monastery, date, members, email, phone })
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+              alert(`Booking Confirmed!\n\nMonastery: ${monastery}\nDate: ${date}\nMembers: ${members}\nEmail: ${email}\nPhone: ${phone}`);
+              // Optionally, reset form
+              document.getElementById('bookingForm').reset();
+          } else {
+              alert('Error: ' + data.message);
+          }
+      } catch (err) {
+          alert('Server error: ' + err.message);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+/* --- Basic & Reused Styles --- */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #faf8f5;
+    color: #3c2c23;
+}
+
+header {
+    background-color: #8c181e;
+    color: #fff;
+    padding: 0.5em 0;
+    box-shadow: 0 2px 6px rgba(60,44,35,0.08);
+}
+
+.navbar {
+    width: 90%;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero {
+    text-align: center;
+    margin: 2em 0;
+}
+
+.hero h2 {
+    font-size: 2.2em;
+    margin-bottom: 0.5em;
+}
+
+/* --- Calendar Specific Styles --- */
+.calendar-intro {
+    width: 80%;
+    max-width: 700px;
+    margin: 1em auto;
+    padding: 1em;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #e0d9d4;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.calendar-intro p {
+    margin: 0;
+    color: #4e3d2a;
+    line-height: 1.6;
+}
+
+.calendar-container {
+    width: 85%;
+    max-width: 900px;
+    margin: 2em auto;
+}
+
+.section-title {
+    font-size: 1.6em;
+    color: #8c181e;
+    border-bottom: 2px solid #e0d9d4;
+    padding-bottom: 0.5em;
+    margin-bottom: 1.5em;
+}
+
+.event-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+    display: flex;
+    margin-bottom: 2em;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+    box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+}
+
+.event-date {
+    flex: 0 0 100px;
+    background-color: #f7f3f0;
+    text-align: center;
+    padding: 1.5em 0;
+    border-right: 1px solid #e0d9d4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.event-date .month {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #8c181e;
+    padding: 0.3em 0.8em;
+    background-color: #fff;
+    border: 1px solid #e0d9d4;
+    border-radius: 5px;
+}
+
+.event-date .day-approx {
+    font-size: 1em;
+    font-weight: 500;
+    color: #5e4a3c;
+    margin-top: 0.5em;
+}
+
+.event-details {
+    padding: 1.5em 2em;
+    flex: 1;
+}
+
+.event-title {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #8c181e;
+    margin: 0 0 0.5em 0;
+}
+
+.event-significance {
+    margin: 0 0 1em 0;
+    color: #4e3d2a;
+    line-height: 1.6;
+}
+
+.event-location {
+    display: flex;
+    align-items: center;
+    color: #3c2c23;
+    font-size: 0.95em;
+}
+
+.event-location i {
+    color: #8c181e;
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+
+/* --- Back to Home Button Styles --- */
+.back-home-container {
+    text-align: center;
+    margin: 3em 0 4em;
+}
+
+.back-home-btn {
+    display: inline-block;
+    padding: 12px 28px;
+    color: #8c181e;
+    background: transparent;
+    border: 2px solid #8c181e;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 1.1em;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.back-home-btn:hover {
+    background: #8c181e;
+    color: #fff;
+}
+
+
+/* --- Media Queries for Responsiveness --- */
+@media (max-width: 768px) {
+    .event-card {
+        flex-direction: column;
+    }
+
+    .event-date {
+        flex-basis: auto;
+        width: 100%;
+        padding: 0.8em 0;
+        border-right: none;
+        border-bottom: 1px solid #e0d9d4;
+        flex-direction: row;
+    }
+
+    .event-date .month {
+        margin-right: 1em;
+    }
+}
+
+/* --- Book Now Button Style --- */
+.book-now-btn {
+    display: inline-block;
+    padding: 8px 20px;
+    color: #fff;
+    background: #8c181e;
+    border: none;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.95em;
+    font-weight: 500;
+    transition: background 0.2s;
+    margin-top: 0.5em;
+}
+
+.book-now-btn:hover {
+    background: #a91e29;
+}

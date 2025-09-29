@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Monasteries - Sikkim Archives</title>
+<link rel="stylesheet" href="./style/resercher.css"> 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  margin:0; padding:0;
+}
+
+/* HEADER */
+header {
+  background:#8B0000;
+  color:#fff;
+  padding:1rem;
+}
+header .container {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+}
+header a.logo {
+  color:#fff;
+  text-decoration:none;
+  font-weight:700;
+  font-size:1.5rem;
+}
+.main-nav ul {
+  list-style:none;
+  display:flex;
+  gap:20px;
+  padding:0;
+  margin:0;
+  flex-wrap:wrap;
+}
+.main-nav ul li a {
+  color:#fff;
+  text-decoration:none;
+}
+.main-nav ul li a.active {
+  text-decoration:underline;
+}
+#logoutBtn {
+  padding:0.5rem 1rem;
+  background:#fff;
+  color:#8B0000;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+/* CONTAINER */
+.container {
+  width:90%;
+  margin:0 auto;
+}
+
+/* PAGE HEADER */
+.page-header {
+  padding:2rem 0;
+  text-align:center;
+}
+
+/* FILTER CONTROLS */
+.filter-controls {
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  padding:1rem 0;
+  flex-wrap:wrap;
+}
+.filter-controls input,
+.filter-controls select {
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  flex:1;
+  min-width:180px;
+}
+
+/* GRID SECTION */
+.collection-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap:20px;
+  padding:2rem 0;
+}
+.card {
+  border:1px solid #ccc;
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+}
+.card img {
+  width:100%;
+  height:150px;
+  object-fit:cover;
+}
+.card-content {
+  padding:10px;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.card-content h3 {
+  margin:0 0 5px;
+  font-size:1.1rem;
+}
+.card-content p {
+  font-size:0.9rem;
+  color:#555;
+}
+.btn-card {
+  display:inline-block;
+  margin-top:10px;
+  padding:8px 12px;
+  background:#8B0000;
+  color:#fff;
+  text-decoration:none;
+  border-radius:8px;
+  text-align:center;
+}
+
+/* FOOTER */
+footer {
+  background:#f1f1f1;
+  text-align:center;
+  padding:1rem;
+  margin-top:2rem;
+}
+
+/* RESPONSIVE MEDIA QUERIES */
+@media (max-width:768px) {
+  header .container {
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .main-nav ul {
+    flex-direction:column;
+    gap:10px;
+    margin-top:10px;
+  }
+  .page-header h1 {
+    font-size:1.5rem;
+  }
+}
+@media (max-width:480px) {
+  .card img {
+    height:120px;
+  }
+  .card-content h3 {
+    font-size:1rem;
+  }
+  .card-content p {
+    font-size:0.8rem;
+  }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <a href="audio.html" class="logo">Sikkim Archives</a>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="researcher.html">Home</a></li>
+              
+                 <li><a href="login.html">Login As Tourist</a></li>
+                <li><a href="archive.html">Archives</a></li>
+            </ul>
+        </nav>
+    </div>
+    <button id="logoutBtn">Logout</button>
+    <script>
+      document.getElementById("logoutBtn").addEventListener("click", () => {
+          window.location.href = "login.html";
+      });
+    </script>
+</header>
+
+<main>
+    <section class="page-header">
+        <div class="container">
+            <h1>Monasteries of Sikkim</h1>
+            <p>Browse the complete archive of monasteries included in this research portal.</p>
+        </div>
+    </section>
+
+    <section class="filter-controls">
+        <div class="container">
+            <input type="text" id="searchInput" placeholder="Search by name...">
+            <select id="regionFilter">
+                <option value="">All Regions</option>
+                <option value="east">East Sikkim</option>
+                <option value="west">West Sikkim</option>
+                <option value="north">North Sikkim</option>
+                <option value="south">South Sikkim</option>
+            </select>
+        </div>
+    </section>
+
+    <section class="monastery-grid-section">
+        <div class="container collection-grid">
+
+            <!-- East Sikkim -->
+            <article class="card" data-region="east">
+                <img src="rumtek2.jpg" alt="Rumtek Monastery">
+                <div class="card-content">
+                    <h3>Rumtek Monastery</h3>
+                    <p>Located in East Sikkim, a significant center of the Kagyu school of Tibetan Buddhism.</p>
+                    <a href="rumtek.html" class="btn-card">View Details</a>
+                </div>
+            </article>
+            <article class="card" data-region="east">
+                <img src="enchey2.jpg" alt="Enchey Monastery">
+                <div class="card-content">
+                    <h3>Enchey Monastery</h3>
+                    <p>An important seat of the Nyingma order, located in Gangtok.</p>
+                    <a href="enchey.html" class="btn-card">View Details</a>
+                </div>
+            </article>
+
+            <!-- West Sikkim -->
+            <article class="card" data-region="west">
+                <img src="pemayangtse2.jpg" alt="Pemayangtse Monastery">
+                <div class="card-content">
+                    <h3>Pemayangtse Monastery</h3>
+                    <p>One of the oldest and most premier monasteries, near Pelling.</p>
+                    <a href="pemayangtse.html" class="btn-card">View Details</a>
+                </div>
+            </article>
+            <article class="card" data-region="west">
+                <img src="tashiding2.jpg" alt="Tashiding Monastery">
+                <div class="card-content">
+                    <h3>Tashiding Monastery</h3>
+                    <p>Perched on a heart-shaped hill, a highly venerated site in West Sikkim.</p>
+                    <a href="tashiding.html" class="btn-card">View Details</a>
+                </div>
+            </article>
+            <article class="card" data-region="west">
+                <img src="dubdi2.jpg" alt="Dubdi Monastery">
+                <div class="card-content">
+                    <h3>Dubdi Monastery</h3>
+                    <p>Also known as the Hermit's Cell, established in 1701.</p>
+                    <a href="dubdi.html" class="btn-card">View Details</a>
+                </div>
+            </article>
+
+            <!-- South Sikkim -->
+            <article class="card" data-region="south">
+                <img src="ralang2.jpg" alt="Ralang Monastery">
+                <div class="card-content">
+                    <h3>Ralang Monastery</h3>
+                    <p>Known for its collection of paintings and thangkas, located in South Sikkim.</p>
+                    <a href="ralang.html" class="btn-card">View Details</a>
+                </div>
+            </article>
+
+            <!-- North Sikkim -->
+            <article class="card" data-region="north">
+                <img src="phodong2.jpg" alt="Phodong Monastery">
+                <div class="card-content">
+                    <h3>Phodong Monastery</h3>
+                    <p>Known for beautiful frescoes, North Sikkim.</p>
+                    <a href="phodong.html" class="btn-card">View Details</a>
+                </div>
+            </article>
+
+        </div>
+    </section>
+</main>
+
+<footer>
+    <div class="container">
+        <p>&copy; 2025 Sikkim Monastery Archives. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+const searchInput = document.getElementById('searchInput');
+const regionFilter = document.getElementById('regionFilter');
+const cards = document.querySelectorAll('.collection-grid .card');
+
+function filterCards() {
+    const query = searchInput.value.toLowerCase();
+    const region = regionFilter.value;
+
+    cards.forEach(card => {
+        const name = card.querySelector('h3').innerText.toLowerCase();
+        const matchesSearch = name.includes(query);
+        const matchesRegion = region === "" || card.dataset.region === region;
+        card.style.display = (matchesSearch && matchesRegion) ? "block" : "none";
+    });
+}
+
+searchInput.addEventListener('input', filterCards);
+regionFilter.addEventListener('change', filterCards);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monastery Explorer - Sikkim Archives</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="./style/audio.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-content">
+            <h1 id="header-title">Sikkim Archives</h1>
+            <div class="controls">
+                <div class="selector-wrapper">
+                    <label id="select-monastery-label" for="monastery-select">Select Monastery:</label>
+                    <select id="monastery-select"></select>
+                </div>
+                <div class="selector-wrapper">
+                    <label id="select-language-label" for="lang-select">Language:</label>
+                    <select id="lang-select">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी (Hindi)</option>
+                        <option value="np">नेपाली (Nepali)</option>
+                        <option value="bn">বাংলা (Bengali)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="monastery-container">
+        </main>
+
+    <script src="./js/audio.js"></script>
+
+</body>
+</html>

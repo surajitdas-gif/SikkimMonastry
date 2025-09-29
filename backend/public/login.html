@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Monastery360</title>
+  <link rel="stylesheet" href="./style/login.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body style="background-image: url('background.png');">
+  <div class="auth-container">
+    <img src="logo.png" alt="Monastery360 Logo" class="logo">
+    <h2>Welcome Back!</h2>
+    <p class="subtitle">Log in to explore Sikkim's Digital Heritage.</p>
+
+    <div class="role-selection">
+      <button type="button" class="role-btn active" onclick="selectRole('tourist')">Tourist</button>
+      <button type="button" class="role-btn" onclick="selectRole('researcher')">Researcher</button>
+    </div>
+
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <input type="text" id="fullname" placeholder="Full name" style="display: none;">
+      <input type="text" id="username" placeholder="Username" style="display: none;">
+      <button type="submit" class="submit-btn">Log In</button>
+    </form>
+
+    <div class="footer-links">
+      <span>Don't have an account? <a href="signup.html">Sign up</a></span>
+    </div>
+  </div>
+
+  <script src="./js/login.js"></script>
+</body>
+</html>

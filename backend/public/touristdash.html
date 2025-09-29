@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monastery360° - Sikkim Digital Heritage</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6a040f; /* Deep Maroon */
+            --primary-dark: #4a030a;  /* Darker Maroon for footer */
+            --secondary-color: #d4af37; /* Gold/Yellow */
+            --light-bg: #f8f9fa;      /* Softer Light Background */
+            --dark-text: #343a40;     /* Softer Dark Text */
+            --light-text: #f8f9fa;
+            --border-color: #dee2e6;
+            --header-height: 80px;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+        }
+
+        /* --- Header Section --- */
+        header {
+            background: var(--primary-color);
+            color: var(--light-text);
+            padding: 0 2rem;
+            height: var(--header-height);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1001;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        #logo { height: 55px; }
+        header h1 { font-size: 1.8rem; margin: 0; font-weight: 700; color: var(--secondary-color); letter-spacing: 1px; }
+        nav { display: flex; align-items: center; gap: 25px; }
+        nav a { color: var(--light-text); text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 8px; position: relative; transition: color 0.3s; }
+        nav a::after { content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 50%; transform: translateX(-50%); background-color: var(--secondary-color); transition: width 0.3s ease-in-out; }
+        nav a:hover { color: var(--secondary-color); }
+        nav a:hover::after { width: 100%; }
+        .header-right { display: flex; align-items: center; }
+        #logoutBtn { padding: 10px 20px; background: transparent; color: var(--light-text); border: 2px solid var(--secondary-color); border-radius: 8px; cursor: pointer; font-weight: bold; transition: background 0.3s, color 0.3s; }
+        #logoutBtn:hover { background: var(--secondary-color); color: var(--primary-color); }
+        .hamburger-menu { display: none; cursor: pointer; flex-direction: column; gap: 5px; }
+        .hamburger-menu .bar { width: 25px; height: 3px; background-color: var(--light-text); border-radius: 5px; transition: all 0.3s ease-in-out; }
+        
+        /* Hero Slider Section */
+        .hero-slider { width: 100%; height: 65vh; position: relative; overflow: hidden; background: #000; }
+        .slide { position: absolute; width: 100%; height: 100%; background-size: cover; background-position: center; opacity: 0; transition: opacity 1.5s ease-in-out; animation: kenburns 20s infinite; }
+        .slide.active { opacity: 1; }
+        .hero-slider .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7)); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; padding: 0 1rem 60px 1rem; box-sizing: border-box; }
+        .overlay h2 { font-size: 3.5rem; margin: 0; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); }
+        .overlay p { font-size: 1.2rem; margin-top: 10px; text-shadow: 1px 1px 4px rgba(0,0,0,0.7); }
+        @keyframes kenburns { 0% { transform: scale(1) translate(0, 0); } 50% { transform: scale(1.1) translate(-5px, 5px); } 100% { transform: scale(1) translate(0, 0); } }
+
+        /* Moving Text Banner */
+        .moving-text-banner { position: absolute; bottom: 0; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.5); overflow: hidden; white-space: nowrap; padding: 2px 0; box-sizing: border-box; z-index: 10; }
+        .moving-text-banner div { display: flex; width: 200%; animation: marquee 35s linear infinite; }
+        .moving-text-banner span { flex-shrink: 0; width: 50%; color: var(--secondary-color); font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* Main Content Sections */
+        .content-section { padding: 60px 20px; max-width: 1200px; margin: 0 auto; }
+        .section-title { text-align: center; font-size: 2.5rem; color: var(--primary-color); margin-bottom: 50px; font-weight: 700; position: relative; padding-bottom: 15px; }
+        .section-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 4px; background-color: var(--secondary-color); border-radius: 2px; }
+        
+        .search-box { display: flex; max-width: 600px; margin: 0 auto 40px auto; border-radius: 50px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); overflow: hidden; border: 1px solid var(--border-color); }
+        .search-box input { flex: 1; padding: 15px 25px; border: none; font-size: 1rem; outline: none; min-width: 0; background-color: #fff; }
+        .search-box button { padding: 15px 30px; border: none; background: var(--primary-color); color: white; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.3s; }
+        .search-box button:hover { background: var(--primary-dark); }
+
+        /* Cards & Map */
+        .cards-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+        .card { background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; border: 1px solid var(--border-color); }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12); }
+        .card img { width: 100%; height: 180px; object-fit: cover; }
+        .card-body { padding: 20px; }
+        .card-body h3 { margin: 0 0 10px; font-size: 1.3rem; color: var(--primary-color); }
+        .card-body p { margin: 0; font-size: 0.95rem; color: var(--dark-text); line-height: 1.6; }
+        #map { width: 100%; height: 500px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); border: 1px solid var(--border-color); }
+
+        /* Modal Styles */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); justify-content: center; align-items: center; z-index: 2000; padding: 1rem; box-sizing: border-box; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.3s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.2); position: relative; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .modal-content h2 { margin-top: 15px; margin-bottom: 10px; color: var(--primary-color); }
+        .modal-content img { width: 100%; height: 220px; object-fit: cover; margin-bottom: 15px; border-radius: 12px; }
+        #monasteryDetails p { line-height: 1.6; color: var(--dark-text); }
+        #monasteryDetails b { color: var(--primary-color); }
+        
+        .modal-btn { display: block; background: var(--primary-color); color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; margin: 6px 0; width: 90%; font-size: 1rem; font-weight: 600; transition: all 0.3s; text-decoration: none; }
+        .modal-btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .close-btn { background: transparent; color: var(--dark-text); border: 2px solid var(--border-color); }
+        .close-btn:hover { background: var(--border-color); color: var(--dark-text); }
+
+        /* --- STYLES FOR FULL SCREEN VIRTUAL TOUR --- */
+        #virtualTourModal .modal-content {
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            background: transparent;
+            padding: 0;
+            box-shadow: none;
+            border-radius: 0;
+            justify-content: center;
+        }
+        #virtualTourModal h2 {
+            color: var(--light-text);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            margin-bottom: 1rem;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+        #streetViewContainer {
+            width: 95%;
+            height: 80%;
+        }
+        #streetViewFrame {
+            width: 100%;
+            height: 100%;
+            border: 2px solid #fff;
+            border-radius: 12px;
+        }
+        .close-tour-btn {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 2.5rem;
+            color: white;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+            line-height: 1;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        #closeVirtualTour {
+             position: absolute;
+             bottom: 20px;
+             left: 50%;
+             transform: translateX(-50%);
+             width: auto;
+             padding: 10px 30px;
+             border: 2px solid white;
+             background: rgba(0,0,0,0.4);
+        }
+
+        /* --- NEW: STYLES FOR AUDIO GUIDE MODAL --- */
+        #audioGuideModal .modal-content {
+            max-width: 450px;
+        }
+        #audioGuideModal h2 {
+            font-size: 1.5rem;
+            margin-top: 0;
+        }
+        .audio-language-selector {
+            margin: 15px 0;
+            width: 90%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .audio-language-selector label {
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 8px;
+        }
+        .audio-language-selector select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            background-color: #fff;
+        }
+        #audioPlayer {
+            width: 90%;
+            margin-top: 10px;
+        }
+        #audioGuideModal .close-btn {
+            width: 90%;
+            margin-top: 20px;
+        }
+
+
+        /* --- Footer Section --- */
+        footer {
+            background: var(--primary-dark);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 60px 20px 20px;
+            margin-top: 60px;
+        }
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .footer-section h3, .footer-section h4 {
+            color: var(--light-text);
+            margin-bottom: 20px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .footer-section h3::after, .footer-section h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--secondary-color);
+        }
+        .footer-logo { height: 50px; margin-bottom: 15px; }
+        .footer-section p { line-height: 1.7; }
+        .footer-section ul { list-style: none; padding: 0; }
+        .footer-section ul li { margin-bottom: 10px; }
+        .footer-section a { color: var(--secondary-color); text-decoration: none; transition: color 0.3s; }
+        .footer-section a:hover { color: var(--light-text); text-decoration: underline; }
+        
+        .social-icons { display: flex; gap: 15px; margin-top: 20px; }
+        .social-icons a { display: inline-flex; justify-content: center; align-items: center; width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); transition: background 0.3s, transform 0.3s; }
+        .social-icons a:hover { background: var(--secondary-color); transform: translateY(-3px); }
+        .social-icons img { width: 20px; height: 20px; }
+
+        .footer-bottom { text-align: center; margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; font-size: 0.9rem; color: rgba(255, 255, 255, 0.6); }
+
+        /* --- Responsive Design Media Queries --- */
+        @media (max-width: 992px) {
+            header { padding: 0 1.5rem; }
+            nav { display: none; position: absolute; top: var(--header-height); left: 0; width: 100%; background-color: var(--primary-color); flex-direction: column; padding: 1rem 0; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+            nav.active { display: flex; }
+            nav a { padding: 1rem; text-align: center; width: 100%; }
+            .header-right { display: none; }
+            .hamburger-menu { display: flex; }
+            .hamburger-menu.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .hamburger-menu.active .bar:nth-child(2) { opacity: 0; }
+            .hamburger-menu.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+            .overlay h2 { font-size: 2.5rem; }
+            .overlay p { font-size: 1rem; }
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.4rem; }
+            #logo { height: 50px; }
+            .content-section { padding: 40px 15px; }
+            .section-title { font-size: 2rem; }
+            #map { height: 400px; }
+            .moving-text-banner span { font-size: 1.2rem; }
+            #streetViewContainer { width: 90%; height: 70%; }
+        }
+
+        @media (max-width: 480px) {
+            .overlay h2 { font-size: 2rem; }
+            header h1 { display: none; }
+            .search-box { flex-direction: column; border-radius: 15px; }
+            .search-box input { border-radius: 15px 15px 0 0; text-align: center; }
+            .search-box button { border-radius: 0 0 15px 15px; }
+            
+            .moving-text-banner { height: 38px; padding: 6px 0; }
+            .moving-text-banner span { font-size: 1.1rem; width: 100%; }
+            .moving-text-banner div { width: 300%; }
+
+            /* --- NEW: Mobile responsive styles for audio modal --- */
+            #audioGuideModal .modal-content {
+                padding: 20px;
+            }
+            #audioGuideModal h2 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <img src="logo.png" alt="Monastery360 Logo" id="logo"/>
+            <h1>MONASTERY360°</h1>
+        </div>
+        <nav id="main-nav">
+            <a href="agency-details.html">Book Your Tour</a>
+            <a href="calander.html">Cultural Board</a>
+            <a href="archive.html">Archive</a>
+            <a href="aisearch.html ">AI Search</a>
+        </nav>
+        <div class="header-right">
+             <button id="logoutBtn">Logout</button>
+        </div>
+        <div class="hamburger-menu" id="hamburger-menu">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </header>
+
+    <section class="hero-slider">
+        <div class="slide active" style="background-image: url('background.png');"></div>
+        <div class="slide" style="background-image: url('background.png');"></div>
+        <div class="slide" style="background-image: url('background.png');"></div>
+        <div class="overlay">
+            <h2>Discover the Serenity of Sikkim</h2>
+            <p>Your Digital Gateway to Sacred Monasteries</p>
+        </div>
+        <div class="moving-text-banner">
+            <div>
+                <span>monastery360° • monastery360° • monastery360° • monastery360°</span>
+                <span>monastery360° • monastery360° • monastery360° • monastery360°</span>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <section class="content-section" id="monastery-listing">
+            <h2 class="section-title">Explore the Monasteries</h2>
+            <div class="search-box">
+                <input type="text" id="mapSearch" placeholder="Enter monastery name to find on map..." />
+                <button id="searchBtn">Search</button>
+            </div>
+            <div class="cards-container" id="cardsContainer"></div>
+        </section>
+
+        <section class="content-section" id="map-section">
+            <h2 class="section-title">Find Your Way</h2>
+            <div id="map"></div>
+        </section>
+    </main>
+
+    <div id="monasteryModal" class="modal">
+        <div class="modal-content">
+            <img id="modalImage" src="" alt="Monastery Image" />
+            <div id="monasteryDetails"></div>
+            <button id="modalBook" class="modal-btn">Book Now</button>
+            <button id="modal360" class="modal-btn">Virtual 360° View</button>
+            <button id="modalAudio" class="modal-btn">Audio Guide</button>
+            <button id="modalClose" class="modal-btn close-btn">Close</button>
+        </div>
+    </div>
+    
+    <div id="virtualTourModal" class="modal">
+        <div class="modal-content">
+            <button id="closeVirtualTourX" class="close-tour-btn">×</button>
+            <h2>360° Virtual Tour</h2>
+            <div id="streetViewContainer">
+                <iframe id="streetViewFrame" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <button id="closeVirtualTour" class="modal-btn">Back to Details</button>
+        </div>
+    </div>
+
+    <div id="audioGuideModal" class="modal">
+        <div class="modal-content">
+            <h2 id="audioGuideTitle">Audio Guide</h2>
+            <div class="audio-language-selector">
+                <label for="audioLanguage">Select Language:</label>
+                <select id="audioLanguage"></select>
+            </div>
+            <audio id="audioPlayer" controls></audio>
+            <button id="closeAudioGuide" class="modal-btn close-btn">Close</button>
+        </div>
+    </div>
+
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section footer-left">
+                <img src="logo.png" alt="Logo" class="footer-logo">
+                <h3>Monastery360°</h3>
+                <p>Preserving Sikkim’s digital heritage with immersive, respectful, and educational virtual experiences.</p>
+            </div>
+            <div class="footer-section footer-middle">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="agency-details.html">Book Your Tour</a></li>
+                    <li><a href="calander.html">Cultural Board</a></li>
+                    <li><a href="archive.html">Archive</a></li>
+                </ul>
+            </div>
+            <div class="footer-section footer-right">
+                <h4>Contact Us</h4>
+                <p>Email: support@monastery360.com</p>
+                <p>Phone: +91 98765 43210</p>
+                <div class="social-icons">
+                    <a href="facebook.svg" aria-label="Facebook"><img src="facebook.svg" alt="Facebook"></a>
+                    <a href="twitter.svg" aria-label="Twitter"><img src="twitter.svg" alt="Twitter"></a>
+                    <a href="instagram.svg" aria-label="Instagram"><img src="instagram.svg" alt="Instagram"></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 Monastery360° | All Rights Reserved</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // --- SCRIPT FOR RESPONSIVE NAVIGATION ---
+        const hamburger = document.getElementById('hamburger-menu');
+        const navMenu = document.getElementById('main-nav');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+        
+        // --- SCRIPT FOR HERO SLIDER ---
+        const slides = document.querySelectorAll('.hero-slider .slide');
+        let currentSlide = 0;
+        setInterval(() => {
+            if (document.visibilityState === 'visible') {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+        }, 5000);
+
+        // --- SCRIPT FOR MAP AND MONASTERY FUNCTIONALITY ---
+        
+        // --- NEW: UPDATED MONASTERIES OBJECT WITH AUDIO DATA FOR ALL MONASTERIES ---
+        const monasteries = {
+            rumtek: { 
+                name: "Rumtek Monastery", lat: 27.3301, lng: 88.5642, description: "Largest monastery in Sikkim, an epitome of Tibetan Buddhist architecture.", image: "rumtek.webp",
+                audio: {
+                    en: { name: "English", file: "rumtek_en.mp3" },
+                    hi: { name: "हिन्दी", file: "audio/rumtek_hi.mp3" }
+                }
+            },
+            pemayangtse: { 
+                name: "Pemayangtse Monastery", lat: 27.3245, lng: 88.3172, description: "One of the oldest and most premier monasteries, offering stunning views.", image: "Pemayangtse Monastery.png",
+                audio: {
+                    en: { name: "English", file: "audio/pemayangtse_en.mp3" }
+                }
+            },
+            tashiding: { 
+                name: "Tashiding Monastery", lat: 27.3561, lng: 88.439, description: "An important pilgrimage site, believed to cleanse the sins of devotees.", image: "Tashiding Monastery.jpg",
+                audio: {
+                    en: { name: "English", file: "audio/tashiding_en.mp3" },
+                    ne: { name: "नेपाली", file: "audio/tashiding_ne.mp3" }
+                }
+            },
+            enchey: { 
+                name: "Enchey Monastery", lat: 27.3312, lng: 88.6132, description: "A peaceful 200-year-old monastery nestled in the serene hills of Gangtok.", image: "Enchey Monastery.jpg",
+                audio: {
+                    en: { name: "English", file: "audio/enchey_en.mp3" }
+                }
+            },
+            dubdi: { 
+                name: "Dubdi Monastery", lat: 27.338, lng: 88.3005, description: "Also known as the Hermit's Cell, it is recognized as the oldest in Sikkim.", image: "Dubdi Monaster.jpg",
+                audio: {
+                    en: { name: "English", file: "audio/dubdi_en.mp3" },
+                    hi: { name: "हिन्दी", file: "audio/dubdi_hi.mp3" }
+                }
+            },
+        };
+
+        const map = L.map("map").setView([27.3389, 88.6065], 10);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap contributors" }).addTo(map);
+
+        let userMarker, routeLayer;
+
+        // --- NEW: Variables for the Audio Guide Modal ---
+        const audioGuideModal = document.getElementById('audioGuideModal');
+        const audioGuideTitle = document.getElementById('audioGuideTitle');
+        const audioLanguageSelector = document.getElementById('audioLanguage');
+        const audioPlayer = document.getElementById('audioPlayer');
+        let currentAudioMonastery = null;
+
+
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; 
+            const dLat = ((lat2 - lat1) * Math.PI) / 180;
+            const dLon = ((lon2 - lon1) * Math.PI) / 180;
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function showMonasteryModal(monastery) {
+            document.getElementById("modalImage").src = monastery.image;
+            document.getElementById("monasteryDetails").innerHTML = `<h2>${monastery.name}</h2><p>${monastery.description}</p>`;
+            document.getElementById("monasteryModal").classList.add("active");
+        }
+
+        document.getElementById("modalClose").addEventListener("click", () => {
+            document.getElementById("monasteryModal").classList.remove("active");
+        });
+
+        function bookMonastery(name) { 
+            window.location.href = `booking.html?monastery=${encodeURIComponent(name)}`; 
+        }
+
+        Object.values(monasteries).forEach((m) => {
+            const marker = L.marker([m.lat, m.lng]).addTo(map).bindPopup(`<b>${m.name}</b><br>${m.description}`);
+            marker.on("click", () => showMonasteryModal(m));
+        });
+
+        const cardsContainer = document.getElementById("cardsContainer");
+        Object.values(monasteries).forEach((m) => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `<img src="${m.image}" alt="${m.name}"><div class="card-body"><h3>${m.name}</h3><p>${m.description.substring(0, 80)}...</p></div>`;
+            card.addEventListener("click", () => {
+                map.setView([m.lat, m.lng], 12);
+                showMonasteryModal(m);
+                document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
+            });
+            cardsContainer.appendChild(card);
+        });
+
+        document.addEventListener("click", (e) => {
+            if (e.target.id === "modalBook") {
+                let name = document.getElementById("monasteryDetails").querySelector("h2").innerText;
+                bookMonastery(name);
+            }
+            if (e.target.id === "modal360") {
+                const monasteryName = document.getElementById("monasteryDetails").querySelector("h2").innerText;
+                let streetViewUrl = "";
+                // Replace these placeholder URLs with actual Google Maps Embed URLs
+                if (monasteryName === "Rumtek Monastery") { streetViewUrl = "https://www.google.com/maps/embed?pb=!4v1757862563444!6m8!1m7!1sCAoSF0NJSE0wb2dLRUlDQWdJRDJnWVdjb2dF!2m2!1d27.2885258949387!2d88.56180959787903!3f37.69231725504985!4f0.003832661155328765!5f0.7820865974627469"; }
+                else if (monasteryName === "Pemayangtse Monastery") { streetViewUrl = "https://www.google.com/maps/embed?pb=!4v1757862927211!6m8!1m7!1sCAoSF0NJSE0wb2dLRUlDQWdJQ0U3SXFEeFFF!2m2!1d27.30426034149243!2d88.30153660084635!3f307.6152239993516!4f21.481097185825817!5f0.7820865974627469"; }
+                else if (monasteryName === "Tashiding Monastery") { streetViewUrl = "https://www.google.com/maps/embed?pb=!4v1757863154912!6m8!1m7!1sCAoSFkNJSE0wb2dLRUlDQWdJQ0V6c08zSWc.!2m2!1d27.30891943909927!2d88.29787983128344!3f280!4f10!5f0.7820865974627469"; }
+                else if (monasteryName === "Enchey Monastery") { streetViewUrl = "https://www.google.com/maps/embed?pb=!4v1757863526697!6m8!1m7!1sCAoSHENJQUJJaEFHYnlmUVF3WEFFMmVudUt3QUNhTTA.!2m2!1d27.33593677395685!2d88.61916587167339!3f336.24452112834024!4f4.772964613964433!5f0.7820865974627469"; }
+                else if (monasteryName === "Dubdi Monastery") { streetViewUrl = "https://www.google.com/maps/embed?pb=!4v1757863656336!6m8!1m7!1sCAoSFkNJSE0wb2dLRUlDQWdJQ0VfNWJDZlE.!2m2!1d27.36641022759916!2d88.22990891649984!3f40!4f10!5f0.7820865974627469"; }
+                
+                const frameContainer = document.getElementById('streetViewContainer');
+                
+                if (streetViewUrl) { 
+                    frameContainer.innerHTML = `<iframe id="streetViewFrame" src="${streetViewUrl}" allowfullscreen loading="lazy"></iframe>`;
+                } 
+                else { 
+                    frameContainer.innerHTML = '<div id="streetViewFrame" style="display:flex;align-items:center;justify-content:center;color:var(--primary-color);font-weight:bold;font-size:1.2rem;background:#f0f0f0;">360° view not available for this monastery.</div>'; 
+                }
+                document.getElementById("virtualTourModal").classList.add("active");
+                document.getElementById("monasteryModal").classList.remove("active");
+            }
+            
+            if (e.target.id === "closeVirtualTour" || e.target.id === "closeVirtualTourX") {
+                document.getElementById("virtualTourModal").classList.remove("active");
+                document.getElementById('streetViewContainer').innerHTML = '<iframe id="streetViewFrame" allowfullscreen loading="lazy"></iframe>'; // Clear the frame
+                document.getElementById("monasteryModal").classList.add("active");
+            }
+
+            // --- NEW: LOGIC FOR "Audio Guide" BUTTON ---
+            if (e.target.id === "modalAudio") {
+                const monasteryName = document.getElementById("monasteryDetails").querySelector("h2").innerText;
+                currentAudioMonastery = Object.values(monasteries).find(m => m.name === monasteryName);
+
+                if (currentAudioMonastery && currentAudioMonastery.audio) {
+                    audioGuideTitle.innerText = `Audio Guide: ${currentAudioMonastery.name}`;
+                    
+                    // Populate language selector
+                    audioLanguageSelector.innerHTML = ''; // Clear previous options
+                    Object.keys(currentAudioMonastery.audio).forEach(langKey => {
+                        const option = document.createElement('option');
+                        option.value = langKey;
+                        option.innerText = currentAudioMonastery.audio[langKey].name;
+                        audioLanguageSelector.appendChild(option);
+                    });
+
+                    // Set initial audio source and play
+                    const initialLang = Object.keys(currentAudioMonastery.audio)[0];
+                    if(initialLang) {
+                        audioPlayer.src = currentAudioMonastery.audio[initialLang].file;
+                        audioPlayer.play();
+                    }
+
+                    document.getElementById("monasteryModal").classList.remove("active");
+                    audioGuideModal.classList.add("active");
+
+                } else {
+                    alert("Audio Guide not available for this monastery.");
+                }
+            }
+        });
+        
+        // --- NEW: EVENT LISTENERS FOR THE AUDIO GUIDE MODAL ---
+        audioLanguageSelector.addEventListener('change', (e) => {
+            const selectedLang = e.target.value;
+            if (currentAudioMonastery && currentAudioMonastery.audio[selectedLang]) {
+                audioPlayer.src = currentAudioMonastery.audio[selectedLang].file;
+                audioPlayer.play();
+            }
+        });
+
+        document.getElementById('closeAudioGuide').addEventListener('click', () => {
+            audioGuideModal.classList.remove('active');
+            audioPlayer.pause(); // Stop the audio
+            audioPlayer.currentTime = 0; // Reset audio
+            document.getElementById("monasteryModal").classList.add("active"); // Show details modal again
+        });
+
+
+        document.getElementById("searchBtn").addEventListener("click", () => {
+            const query = document.getElementById("mapSearch").value.toLowerCase().trim();
+            const m = Object.values(monasteries).find((mon) => mon.name.toLowerCase().includes(query));
+            if (!m) return alert("Monastery not found!");
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const userCoords = [pos.coords.latitude, pos.coords.longitude];
+                    if (userMarker) map.removeLayer(userMarker);
+                    if (routeLayer) map.removeLayer(routeLayer);
+                    userMarker = L.marker(userCoords).addTo(map).bindPopup("You are here").openPopup();
+                    document.getElementById('map-section').scrollIntoView({ behavior: 'smooth' });
+                    map.setView([m.lat, m.lng], 12);
+                    showMonasteryModal(m);
+                    fetch(`https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${m.lng},${m.lat}?overview=full&geometries=geojson`)
+                        .then((res) => res.json()).then((data) => {
+                            if (data.routes && data.routes.length > 0) {
+                                routeLayer = L.geoJSON(data.routes[0].geometry, { color: "blue", weight: 5 }).addTo(map);
+                                map.fitBounds(routeLayer.getBounds());
+                            }
+                        });
+                    const distance = getDistance(userCoords[0], userCoords[1], m.lat, m.lng);
+                    const approxDuration = Math.round((distance / 40) * 60);
+                    document.getElementById("monasteryDetails").innerHTML += `<p style="margin-top:15px;"><b>Distance from you:</b> ${distance.toFixed(1)} km<br><b>Approx. Travel Time:</b> ${approxDuration} mins</p>`;
+                }, () => alert("Geolocation permission denied. Cannot calculate route."));
+            } else alert("Geolocation not supported by your browser.");
+        });
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+             localStorage.removeItem("user");
+             alert("You have been logged out successfully!");
+             window.location.href = "login.html";
+        });
+    </script>
+</body>
+</html>
